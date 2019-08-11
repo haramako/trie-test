@@ -4,10 +4,11 @@ require './constructor'
 # It would be quite difficult to understand this code if you are not familiar
 # with LOUDS.
 class Trie
+    attr_reader :bit_array
+    attr_reader :labels
+
     def initialize(words)
-        bit_array, labels = words_to_arrays(words)
-        @bit_array = bit_array
-        @labels = labels
+        @bit_array, @labels = words_to_arrays(words)
     end
 
     def lower(words)
@@ -24,6 +25,7 @@ class Trie
         words.each do |word|
             constructor.add(word)
         end
+        constructor.show
         bit_array, labels = constructor.dump()
         return bit_array, labels
     end
@@ -44,7 +46,7 @@ class Trie
     # Returns the number of target bits from head to the position in the bit string.
     def rank(position, target_bit)
         n = 0
-        for bit in @bit_array[0,position]
+        for bit in @bit_array[0,position+1]
             if(bit == target_bit)
                 n += 1
             end
@@ -59,12 +61,13 @@ class Trie
         # search brothers
         while(@bit_array[index] == 1)
             node = rank(index, 1)
+            # puts "scan #{character} #{index} #{node}"
             if(@labels[node] == character)
                 return node
             end
             index += 1
         end
-        return nil
+        nil
     end
 
     # Returns the leaf node number if the query exists in the tree
@@ -74,11 +77,10 @@ class Trie
 
         node = 1
         query.each_char do |c|
+            # puts "#{c} #{node}"
             node = trace_children(node, c)
-            if node.nil?  #the query is not in the tree
-                return nil
-            end
+            return nil if node.nil?  #the query is not in the tree
         end
-        return node
+        node
     end
 end

@@ -1,3 +1,4 @@
+require 'pp'
 require './trie'
 
 words = ['an', 'i', 'of', 'one', 'our', 'out']
@@ -12,7 +13,11 @@ test_set = {
 }
 
 trie = Trie.new(words)
+
+pp trie.bit_array
+pp trie.labels
+
 test_set.each do |query, answer|
   result = trie.search(query)
-  puts "query: {!s:>5}  result: {!s:>5}  answer: {!s:>5}" % [query, result, answer]
+  puts "query: %-8s  result: %4s answer: %4s" % [query, result, answer]
 end

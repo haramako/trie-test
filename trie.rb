@@ -64,16 +64,16 @@ class Trie
             end
             index += 1
         end
-        return None
+        return nil
     end
 
     # Returns the leaf node number if the query exists in the tree
     # None otherwise
     def search(query)
-        query = query.lower()
+        query = query.downcase
 
         node = 1
-        query.each do |c|
+        query.each_char do |c|
             node = trace_children(node, c)
             if node.nil?  #the query is not in the tree
                 return nil

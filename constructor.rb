@@ -1,4 +1,8 @@
 class Node
+    attr_reader :value
+    attr_reader :children
+    attr_accessor :visited
+
     # The node of the tree.
     # Each node has one character as its member.
     def initialize(value_)
@@ -8,19 +12,20 @@ class Node
     end
 
     def to_s
-        return @value.to_s
+        @value
     end
 
     def add_child(child_)
-        @children.append(child_)
+        @children << child_
     end
 end
 
 
+# This class has:
+#    a function which constructs a tree by words
+#    a function which dumps the tree as a LOUDS bit-string
 class ArrayConstructor
-    #This class has:
-    #    a function which constructs a tree by words
-    #    a function which dumps the tree as a LOUDS bit-string
+
     def initialize
         @tree = Node.new ('')  #The root node
     end
@@ -32,15 +37,13 @@ class ArrayConstructor
 
     # Build a tree
     def build(node, word, depth=0)
-        if(depth == len(word))
-            return
-        end
+        return if depth == word.size
 
         node.children.each do |child|
             # if the child which its value is word[depth] exists,
             # continue building the tree from the next to the child.
-            if(child.value == word[depth])
-                self.build(child, word, depth+1)
+            if child.value == word[depth]
+                build(child, word, depth+1)
                 return
             end
         end
@@ -50,7 +53,6 @@ class ArrayConstructor
         child = Node.new(word[depth])
         node.add_child(child)
         build(child, word, depth+1)
-        return
     end
 
     def show
@@ -58,7 +60,7 @@ class ArrayConstructor
     end
 
     def show_(node, depth=0)
-        puts format("%s%s", '  '*depth, node)
+        puts format('%s%s', '  '*depth, node)
         node.children.each do |child|
             show_(child, depth+1)
         end
@@ -72,18 +74,18 @@ class ArrayConstructor
         labels = ['']
 
         #dumps by Breadth-first search
-        queue = deque()
-        queue.append(@tree)
+        queue = []
+        queue.push @tree
 
-        while len(queue) != 0
-            node = queue.popleft()
-            labels.append(node.value)
+        until queue.empty?
+            node = queue.shift
+            labels.push node.value
 
-            bit_array += [1] * len(node.children) + [0]
+            bit_array += [1] * node.children.size + [0]
 
             node.children.each do |child|
-                child.visited = True
-                queue.append(child)
+                child.visited = true
+                queue.push child
             end
         end
         [bit_array, labels]
